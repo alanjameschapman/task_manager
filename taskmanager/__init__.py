@@ -1,0 +1,13 @@
+import os # noqa: E402
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+if os.path.exists("env.py"):
+    import env # noqa: F401
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_URL")
+
+db = SQLAlchemy(app)
+
+from taskmanager import routes # noqa: E402, F401
