@@ -5,18 +5,21 @@ from taskmanager.models import Category, Task
 
 @app.route("/")
 def home():
+    """Display all tasks in the database."""
     tasks = list(Task.query.order_by(Task.id).all())
     return render_template("tasks.html", tasks=tasks)
 
 
 @app.route("/categories")
 def categories():
+    """Display all categories in the database."""
     categories = list(Category.query.order_by(Category.category_name).all())
     return render_template("categories.html", categories=categories)
 
 
 @app.route("/add_category", methods=["GET", "POST"])
 def add_category():
+    """Add a category to the database."""
     if request.method == "POST":
         category = Category(category_name=request.form.get("category_name"))
         db.session.add(category)
@@ -27,6 +30,7 @@ def add_category():
 
 @app.route("/edit_category/<int:category_id>", methods=["GET", "POST"])
 def edit_category(category_id):
+    """Edit a category in the database."""
     category = Category.query.get_or_404(category_id)
     if request.method == "POST":
         category.category_name = request.form.get("category_name")
@@ -37,6 +41,7 @@ def edit_category(category_id):
 
 @app.route("/delete_category/<int:category_id>")
 def delete_category(category_id):
+    """Delete a category from the database."""
     category = Category.query.get_or_404(category_id)
     db.session.delete(category)
     db.session.commit()
@@ -45,6 +50,7 @@ def delete_category(category_id):
 
 @app.route("/add_task", methods=["GET", "POST"])
 def add_task():
+    """Add a task to the database."""
     categories = list(Category.query.order_by(Category.category_name).all())
     if request.method == "POST":
         task = Task(
@@ -62,6 +68,7 @@ def add_task():
 
 @app.route("/edit_task/<int:task_id>", methods=["GET", "POST"])
 def edit_task(task_id):
+    """Edit a task in the database."""
     task = Task.query.get_or_404(task_id)
     categories = list(Category.query.order_by(Category.category_name).all())
     if request.method == "POST":
@@ -72,3 +79,12 @@ def edit_task(task_id):
         task.category_id = request.form.get("category_id")
         db.session.commit()
     return render_template("edit_task.html", task=task, categories=categories)
+
+
+@app.route("/delete_task/<int:task_id>")
+def delete_task(task_id):
+    """Delete a task from the database."""
+    task = Task.query.get_or_404(task_id)
+    db.session.delete(task)
+    db.session.commit()
+    return redirect(url_for("home"))
